@@ -1,0 +1,18 @@
+{
+  "name": "json-performance",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "cargo build && node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "benchmark": "^2.1.3",
+    "ffi": "^2.2.0",
+    "microtime": "^2.1.2",
+    "ref": "^1.3.3",
+    "ref-array": "^1.2.0"
+  }
+}
