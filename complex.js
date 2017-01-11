@@ -100,36 +100,57 @@ const lib = ffi.Library('target/debug/libjson_performance', {
   encode_auth_req: [i32, [AuthReq, u32Pointer, ffiStringPointer]],
 });
 
-module.exports = function() {
+module.exports = function(aInfo, containers)  {
 	// building complex struct types
 	const appInfo = new AppExchangeInfo({
-	  id: createFFIString('net.maidsafe.demo.app'),
+	  id: createFFIString(aInfo.id),
 	  scope: ref.NULL,
 	  scope_len: 0,
 	  scope_cap: 0,
-	  name: createFFIString('sample'),
-	  vendor: createFFIString('maidsafe'),
+	  name: createFFIString(aInfo.name),
+	  vendor: createFFIString(aInfo.vendor),
 	});
 
-	const permissions = new PermissionArrayType([
-	  Permission.Read
-	]);
+	let containerPermissionList;
 
-	const permArray = new PermissionArray({
-	  ptr: permissions,
-	  len: permissions.length,
-	  cap: permissions.length
-	});
-	const publicContainer = new ContainerPermissions({
-	  cont_name: createFFIString('_public'),
-	  access: permArray
-	});
-	//
-	const containerPermissionList = new ContainersPermissionArrayType([
-	  publicContainer
-	]);
+	if (containers) {
+		containerPermissionList = new ContainersPermissionArrayType(
+			Object.getOwnPropertyNames(containers).map((key) => {
+				const permissions = new PermissionArrayType(containers[key].map((k) => Permission[k]));
+				const permArray = new PermissionArray({
+				  ptr: permissions,
+				  len: permissions.length,
+				  cap: permissions.length
+				});
+				return new ContainerPermissions({
+				  cont_name: createFFIString(key),
+				  access: permArray
+				});
+			})
+		)
+
+	} else {
+		const permissions = new PermissionArrayType([
+		  Permission.Read
+		]);
+
+		const permArray = new PermissionArray({
+		  ptr: permissions,
+		  len: permissions.length,
+		  cap: permissions.length
+		});
+		const publicContainer = new ContainerPermissions({
+		  cont_name: createFFIString('_public'),
+		  access: permArray
+		});
+		//
+		containerPermissionList = new ContainersPermissionArrayType([
+		  publicContainer
+		]);
+	}
+
 	// // console.log(containerPermissionList);
-	const containers = new ContainerPermissionsArray({
+	const ctnrs = new ContainerPermissionsArray({
 	  ptr: containerPermissionList,
 	  len: containerPermissionList.length,
 	  cap: containerPermissionList.length
@@ -137,7 +158,7 @@ module.exports = function() {
 	// // //
 	const request = new AuthReq({
 	  app: appInfo,
-	  containers,
+	  ctnrs,
 	  app_container: false
 	});
 	//
@@ -148,6 +169,3 @@ module.exports = function() {
 	// const derf = encodedStr.deref()
 	// const scheme = ref.reinterpret(derf.ptr, derf.len).toString();
 }
-
-
-module.exports();

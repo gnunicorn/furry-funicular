@@ -1,7 +1,8 @@
 use std::collections::{BTreeSet, HashMap};
 
 /// Permission action
-#[derive(Serialize, Deserialize, Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[repr(C)]
+#[derive(Serialize, Deserialize, Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd,  RustcEncodable, RustcDecodable)]
 pub enum Permission {
     /// Read
     Read,
@@ -15,7 +16,7 @@ pub enum Permission {
     ManagePermissions,
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug,  RustcEncodable, RustcDecodable)]
 pub struct AppExchangeInfo {
     /// The ID. It must be unique.
     pub id: String,
@@ -28,7 +29,7 @@ pub struct AppExchangeInfo {
 }
 
 /// Represents an authorization request
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug,  RustcEncodable, RustcDecodable)]
 pub struct AuthReq {
     /// The application identifier for this request
     pub app: AppExchangeInfo,
@@ -38,3 +39,4 @@ pub struct AuthReq {
     /// The list of containers it wishes to access (and desired permissions).
     pub containers: HashMap<String, BTreeSet<Permission>>,
 }
+

@@ -32,20 +32,20 @@ const lib = ffi.Library('target/debug/libjson_performance', {
 
 
 
-module.exports = function() {
+module.exports = function(appInfo, containers) {
 
 	const reqId = ref.alloc(i32);
 	const encodedStr = ref.alloc(FFIString);
 
 	const request = createFFIString(JSON.stringify({
 		app: {
-			id: 'net.maidsafe.demo.app',
-			name: 'sample',
-			scope: null,
-			vendor: 'maidsafe'
+			id: appInfo.id,
+			name: appInfo.name,
+			scope: appInfo.scope || null,
+			vendor: appInfo.vendor
 		},
 		app_container: true,
-		containers: {
+		containers: containers || {
 			'_private': ['Read']
 		}
 
@@ -55,5 +55,3 @@ module.exports = function() {
 	// const derf = encodedStr.deref()
 	// const scheme = ref.reinterpret(derf.ptr, derf.len).toString();
 }
-
-module.exports()

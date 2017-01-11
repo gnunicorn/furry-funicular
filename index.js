@@ -8,9 +8,28 @@ const suite = Benchmark.Suite({name: "FFI Test"});
 const simple = require('./simple.js');
 const complex = require('./complex.js');
 
+const appInfo = {
+	id: 'net.maidsafe.test.sample.benchmark',
+	name: 'benchmark-test',
+	vendor: 'maidsafe'
+};
+const containers = {
+	'_public': ['Read'],
+	'_pictures': ['Read', 'Insert'],
+	// '_app/net.maidsafe.test.benchmark-app': ['ManagePermissions', 'Read', 'Update']
+};
+
+// simple(appInfo, containers);
+// complex(appInfo, containers);
+
+
 suite
-.add("Simple with JSON", simple)
-.add("Complex Types", complex)
+.add("Simple with JSON", function() {
+	simple(appInfo, containers);
+})
+.add("Complex Types", function() {
+	complex(appInfo, containers);
+})
 .on('cycle', function(event) {
   console.log(String(event.target));
 })
